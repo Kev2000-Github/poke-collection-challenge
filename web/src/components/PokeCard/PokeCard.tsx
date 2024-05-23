@@ -60,6 +60,22 @@ const DELETE_POKEMON_LIKE = gql`
   }
 `
 
+const ADD_POKEMON_TOP = gql`
+  mutation CreatePokemonTop($input: CreatePokemonTopInput!) {
+    createPokemonTop(input: $input) {
+      id
+    }
+  }
+`
+
+const REMOVE_POKEMON_TOP = gql`
+  mutation DeletePokemonTop($input: DeletePokemonTopInput!) {
+    deletePokemonTop(input: $input) {
+      id
+    }
+  }
+`
+
 const color = 'green.300'
 
 export default function PokeCard({ pokemon }: { pokemon: Pokemon }) {
@@ -73,6 +89,17 @@ export default function PokeCard({ pokemon }: { pokemon: Pokemon }) {
       refetchQueries: [GET_POKEMONS_PAGINATED],
     }
   )
+  const [createPokemonTop, { loading: isLoadingAddPokemonTop }] = useMutation(
+    ADD_POKEMON_TOP,
+    {
+      refetchQueries: [GET_POKEMONS_PAGINATED],
+    }
+  )
+  const [removePokemonTop, { loading: isLoadingRemovePokemonTop }] =
+    useMutation(REMOVE_POKEMON_TOP, {
+      refetchQueries: [GET_POKEMONS_PAGINATED],
+    })
+
   const [isDetailsVisible, setIsDetailsVisible] = useState(false)
   const { onOpen } = useUserLikesModal()
 
@@ -91,6 +118,24 @@ export default function PokeCard({ pokemon }: { pokemon: Pokemon }) {
       }
     } catch (error) {
       console.error('Failed to like pokemon', error)
+    }
+  }
+
+  const onToggleTop = async (isTop: boolean) => {
+    try {
+      const input = {
+        pokemonId: pokemon.id,
+        userId: currentUser.id,
+      }
+      if (isTop) {
+        await createPokemonTop({ variables: { input } })
+        toast.success('added pokemon as favorite')
+      } else {
+        await removePokemonTop({ variables: { input } })
+        toast.success('removed pokemon as favorite')
+      }
+    } catch (error) {
+      console.error('something failed', error)
     }
   }
 
@@ -119,7 +164,8 @@ export default function PokeCard({ pokemon }: { pokemon: Pokemon }) {
           onFlip={() => setIsDetailsVisible(true)}
           onToggleLike={onToggleLike}
           isLikeLoading={loading || isLoadingLikeRemoval}
-          onToggleTop={() => {}}
+          isTopLoading={isLoadingAddPokemonTop || isLoadingRemovePokemonTop}
+          onToggleTop={onToggleTop}
         />
         <BackPokeCard
           data={pokemon}
@@ -136,12 +182,14 @@ const FrontPokeCard = ({
   onFlip,
   onToggleLike,
   isLikeLoading,
+  isTopLoading,
   onToggleTop,
 }: {
   data: Pokemon
   onToggleTop: (isTop: boolean) => void
   onToggleLike: (isLiked: boolean) => void
   isLikeLoading: boolean
+  isTopLoading: boolean
 } & FaceCardProps) => {
   const { isAuthenticated } = useAuth()
   return (
@@ -168,6 +216,7 @@ const FrontPokeCard = ({
         </Box>
         {isAuthenticated && (
           <IconButton
+            isLoading={isTopLoading}
             variant="link"
             size="md"
             onClick={() => onToggleTop(!isTop)}

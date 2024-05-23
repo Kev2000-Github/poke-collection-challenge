@@ -7,10 +7,10 @@ import type {
 import { db } from 'src/lib/db'
 
 export const myPokemonTops: QueryResolvers['myPokemonTops'] = () => {
-  return db.pokemonTop.findMany()
+  return db.pokemonTop.findMany({ where: { userId: context.currentUser.id } })
 }
 
-export const createPokemonTop: MutationResolvers['createPokemonTop'] = ({
+export const createPokemonTop: MutationResolvers['createPokemonTop'] = async ({
   input,
 }) => {
   return db.pokemonTop.create({

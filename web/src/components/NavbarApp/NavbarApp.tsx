@@ -70,13 +70,19 @@ export default function NavbarApp() {
         />
         <HStack spacing={8} alignItems={'center'}>
           <Box>Logo</Box>
-          <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
-            {Links.map((link) => (
-              <NavLink path={link.path} key={link.path}>
-                {link.name}
-              </NavLink>
-            ))}
-          </HStack>
+          {isAuthenticated && (
+            <HStack
+              as={'nav'}
+              spacing={4}
+              display={{ base: 'none', md: 'flex' }}
+            >
+              {Links.map((link) => (
+                <NavLink path={link.path} key={link.path}>
+                  {link.name}
+                </NavLink>
+              ))}
+            </HStack>
+          )}
         </HStack>
         {isAuthenticated ? (
           <Flex alignItems={'center'}>

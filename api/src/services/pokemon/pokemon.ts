@@ -28,22 +28,25 @@ export const getPokemons: QueryResolvers['getPokemons'] = async ({
       const count = await db.pokemonLike.count({
         where: { pokemonId: pokemon.id },
       })
-      const isLiked = await db.pokemonLike.findUnique({
-        where: {
-          userId_pokemonId: {
-            userId: context.currentUser.id,
-            pokemonId: pokemon.id,
+      let isLiked, isTop
+      if (context.currentUser) {
+        isLiked = await db.pokemonLike.findUnique({
+          where: {
+            userId_pokemonId: {
+              userId: context.currentUser.id,
+              pokemonId: pokemon.id,
+            },
           },
-        },
-      })
-      const isTop = await db.pokemonTop.findUnique({
-        where: {
-          userId_pokemonId: {
-            userId: context.currentUser.id,
-            pokemonId: pokemon.id,
+        })
+        isTop = await db.pokemonTop.findUnique({
+          where: {
+            userId_pokemonId: {
+              userId: context.currentUser.id,
+              pokemonId: pokemon.id,
+            },
           },
-        },
-      })
+        })
+      }
       return {
         id: pokemon.id,
         likes: count,
@@ -94,7 +97,7 @@ export const pokemon: QueryResolvers['pokemon'] = async ({ id }) => {
   const isLiked = await db.pokemonLike.findUnique({
     where: {
       userId_pokemonId: {
-        userId: context.currentUser.id,
+        userId: context.currentUser?.id,
         pokemonId: pokemon.id,
       },
     },
@@ -102,7 +105,7 @@ export const pokemon: QueryResolvers['pokemon'] = async ({ id }) => {
   const isTop = await db.pokemonTop.findUnique({
     where: {
       userId_pokemonId: {
-        userId: context.currentUser.id,
+        userId: context.currentUser?.id,
         pokemonId: pokemon.id,
       },
     },

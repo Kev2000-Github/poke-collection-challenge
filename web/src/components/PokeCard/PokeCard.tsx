@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react'
 
 import { useAuth } from 'src/auth'
+import useUserLikesModal from 'src/hooks/use-user-likes-modal'
 
 interface Pokemon {
   id: number
@@ -44,6 +45,7 @@ const color = 'green.300'
 
 export default function PokeCard({ pokemon }: { pokemon: Pokemon }) {
   const [isDetailsVisible, setIsDetailsVisible] = useState(false)
+  const { onOpen } = useUserLikesModal()
   return (
     <Box
       w={'350px'}
@@ -73,7 +75,7 @@ export default function PokeCard({ pokemon }: { pokemon: Pokemon }) {
         <BackPokeCard
           data={pokemon}
           onFlip={() => setIsDetailsVisible(false)}
-          onOpenPopularity={() => {}}
+          onOpenPopularity={() => onOpen(pokemon.id)}
         />
       </Box>
     </Box>

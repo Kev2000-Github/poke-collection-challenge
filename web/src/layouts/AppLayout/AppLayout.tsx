@@ -1,3 +1,4 @@
+import LikesModal from 'src/components/LikesModal/LikesModal'
 import NavbarApp from 'src/components/NavbarApp/NavbarApp'
 
 type AppLayoutProps = {
@@ -9,6 +10,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     <>
       <NavbarApp />
       {children}
+      <LikesModal />
     </>
   )
 }

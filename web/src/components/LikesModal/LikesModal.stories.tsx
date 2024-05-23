@@ -27,5 +27,6 @@ export const Primary: Story = {
   args: {
     isOpen: true,
     onClose: () => {},
+    pokemonId: 1,
   },
 }

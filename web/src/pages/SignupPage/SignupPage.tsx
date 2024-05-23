@@ -25,15 +25,18 @@ const SignupPage = () => {
   }, [isAuthenticated])
 
   // focus on username box on page load
-  const usernameRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
-    usernameRef.current?.focus()
+    emailRef.current?.focus()
   }, [])
 
   const onSubmit = async (data: Record<string, string>) => {
     const response = await signUp({
       username: data.username,
       password: data.password,
+      fullName: data.fullName,
+      email: data.email,
+      avatar: data.avatar,
     })
 
     if (response.message) {
@@ -62,6 +65,27 @@ const SignupPage = () => {
               <div className="rw-form-wrapper">
                 <Form onSubmit={onSubmit} className="rw-form-wrapper">
                   <Label
+                    name="email"
+                    className="rw-label"
+                    errorClassName="rw-label rw-label-error"
+                  >
+                    Email
+                  </Label>
+                  <TextField
+                    name="email"
+                    className="rw-input"
+                    errorClassName="rw-input rw-input-error"
+                    ref={emailRef}
+                    validation={{
+                      required: {
+                        value: true,
+                        message: 'email is required',
+                      },
+                    }}
+                  />
+                  <FieldError name="email" className="rw-field-error" />
+
+                  <Label
                     name="username"
                     className="rw-label"
                     errorClassName="rw-label rw-label-error"
@@ -72,7 +96,6 @@ const SignupPage = () => {
                     name="username"
                     className="rw-input"
                     errorClassName="rw-input rw-input-error"
-                    ref={usernameRef}
                     validation={{
                       required: {
                         value: true,
@@ -81,6 +104,26 @@ const SignupPage = () => {
                     }}
                   />
                   <FieldError name="username" className="rw-field-error" />
+
+                  <Label
+                    name="fullName"
+                    className="rw-label"
+                    errorClassName="rw-label rw-label-error"
+                  >
+                    Full Name
+                  </Label>
+                  <TextField
+                    name="fullName"
+                    className="rw-input"
+                    errorClassName="rw-input rw-input-error"
+                    validation={{
+                      required: {
+                        value: true,
+                        message: 'fullName is required',
+                      },
+                    }}
+                  />
+                  <FieldError name="fullName" className="rw-field-error" />
 
                   <Label
                     name="password"
@@ -102,6 +145,20 @@ const SignupPage = () => {
                     }}
                   />
                   <FieldError name="password" className="rw-field-error" />
+
+                  <Label
+                    name="avatar"
+                    className="rw-label"
+                    errorClassName="rw-label rw-label-error"
+                  >
+                    Avatar(URL)
+                  </Label>
+                  <TextField
+                    name="avatar"
+                    className="rw-input"
+                    errorClassName="rw-input rw-input-error"
+                  />
+                  <FieldError name="avatar" className="rw-field-error" />
 
                   <div className="rw-button-group">
                     <Submit className="rw-button rw-button-blue">

@@ -104,6 +104,7 @@ export const handler = async (
 
   interface UserAttributes {
     fullName: string
+    email: string
     avatar?: string
   }
 
@@ -135,6 +136,7 @@ export const handler = async (
       return db.user.create({
         data: {
           username: username,
+          email: _userAttributes.email,
           hashedPassword: hashedPassword,
           salt: salt,
           fullName: _userAttributes.fullName,

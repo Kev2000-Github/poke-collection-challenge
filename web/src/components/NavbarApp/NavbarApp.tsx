@@ -12,7 +12,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuDivider,
   useDisclosure,
   useColorModeValue,
   Link,
@@ -40,7 +39,7 @@ const NavLink = ({ children, path }: { children: ReactNode; path: string }) => (
 )
 
 export default function NavbarApp() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, currentUser, logOut } = useAuth()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const Links = [
@@ -89,18 +88,10 @@ export default function NavbarApp() {
                 cursor={'pointer'}
                 minW={0}
               >
-                <Avatar
-                  size={'sm'}
-                  src={
-                    'https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-                  }
-                />
+                <Avatar size={'sm'} src={currentUser.avatar} />
               </MenuButton>
               <MenuList>
-                <MenuItem>Link 1</MenuItem>
-                <MenuItem>Link 2</MenuItem>
-                <MenuDivider />
-                <MenuItem>Link 3</MenuItem>
+                <MenuItem onClick={logOut}>Logout</MenuItem>
               </MenuList>
             </Menu>
           </Flex>

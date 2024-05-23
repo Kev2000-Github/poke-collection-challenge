@@ -34,6 +34,7 @@ export default async () => {
       getUserData({
         username: 'albertoMendez',
         fullName: 'Alberto Mendoza',
+        email: 'albert@gmail.com',
         pokemonLike: {
           create: [
             { pokemonId: 1 },
@@ -49,6 +50,7 @@ export default async () => {
       getUserData({
         username: 'carlitos',
         fullName: 'Carlos Rodriguez',
+        email: 'carlos@gmail.com',
         pokemonLike: {
           create: [
             { pokemonId: 1 },
@@ -64,6 +66,7 @@ export default async () => {
       getUserData({
         username: 'juanitos',
         fullName: 'Juan Manzano',
+        email: 'juan@gmail.com',
         pokemonLike: {
           create: [
             { pokemonId: 1 },
@@ -79,6 +82,7 @@ export default async () => {
       getUserData({
         username: 'drake',
         fullName: 'drake bell',
+        email: 'drake@gmail.com',
         pokemonLike: {
           create: [
             { pokemonId: 1 },

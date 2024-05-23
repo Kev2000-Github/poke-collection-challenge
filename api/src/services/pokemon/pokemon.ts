@@ -1,4 +1,6 @@
-import { QueryResolvers } from './../../types/graphql.d'
+import { db } from 'src/lib/db'
+
+import { QueryResolvers } from '../../../types/graphql'
 
 const LIMIT = 12
 const getPaginationParams = (page: number) => {
@@ -21,6 +23,36 @@ export const getPokemons: QueryResolvers['getPokemons'] = async ({
     resp.results.map((pokemon) => P.getPokemonByName(pokemon.name))
   )
 
+  const pokemonMetrics = await Promise.all(
+    pokemons.map(async (pokemon) => {
+      const count = await db.pokemonLike.count({
+        where: { pokemonId: pokemon.id },
+      })
+      const isLiked = await db.pokemonLike.findUnique({
+        where: {
+          userId_pokemonId: {
+            userId: context.currentUser.id,
+            pokemonId: pokemon.id,
+          },
+        },
+      })
+      const isTop = await db.pokemonTop.findUnique({
+        where: {
+          userId_pokemonId: {
+            userId: context.currentUser.id,
+            pokemonId: pokemon.id,
+          },
+        },
+      })
+      return {
+        id: pokemon.id,
+        likes: count,
+        isLiked,
+        isTop,
+      }
+    })
+  )
+
   const formattedPokemons = pokemons.map((pokemon) => {
     const species = pokemonSpecies.find(
       (species) => species.name === pokemon.name
@@ -28,6 +60,9 @@ export const getPokemons: QueryResolvers['getPokemons'] = async ({
     const description = species.flavor_text_entries.findLast(
       (entry) => entry.language.name === 'en'
     ).flavor_text
+    const pokemonData = pokemonMetrics.find(
+      (pokemonLike) => pokemonLike.id === pokemon.id
+    )
 
     return {
       id: pokemon.id,
@@ -39,9 +74,9 @@ export const getPokemons: QueryResolvers['getPokemons'] = async ({
         val: stat.base_stat,
       })),
       description,
-      isTop: true,
-      likes: 100,
-      isLiked: false,
+      isTop: pokemonData.isTop ? true : false,
+      likes: pokemonData.likes,
+      isLiked: pokemonData.isLiked ? true : false,
     }
   })
 

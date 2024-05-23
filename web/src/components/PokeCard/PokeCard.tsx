@@ -14,9 +14,12 @@ import {
   IconButton,
 } from '@chakra-ui/react'
 
-import { useAuth } from 'src/auth'
-import useUserLikesModal from 'src/hooks/use-user-likes-modal'
+import { useMutation } from '@redwoodjs/web'
+import { toast } from '@redwoodjs/web/dist/toast'
 
+import { useAuth } from 'src/auth'
+import { QUERY as GET_POKEMONS_PAGINATED } from 'src/components/PokemonsCell'
+import useUserLikesModal from 'src/hooks/use-user-likes-modal'
 interface Pokemon {
   id: number
   name: string
@@ -41,14 +44,59 @@ interface CardLayoutProps {
   wrapperCss?: React.CSSProperties
 }
 
+const CREATE_POKEMON_LIKE = gql`
+  mutation CreatePokemonLike($input: CreatePokemonLikeInput!) {
+    createPokemonLike(input: $input) {
+      id
+    }
+  }
+`
+
+const DELETE_POKEMON_LIKE = gql`
+  mutation DeletePokemonLike($input: DeletePokemonLikeInput!) {
+    deletePokemonLike(input: $input) {
+      id
+    }
+  }
+`
+
 const color = 'green.300'
 
 export default function PokeCard({ pokemon }: { pokemon: Pokemon }) {
+  const { currentUser } = useAuth()
+  const [createPokemonLike, { loading }] = useMutation(CREATE_POKEMON_LIKE, {
+    refetchQueries: [GET_POKEMONS_PAGINATED],
+  })
+  const [deletePokemonLike, { loading: isLoadingLikeRemoval }] = useMutation(
+    DELETE_POKEMON_LIKE,
+    {
+      refetchQueries: [GET_POKEMONS_PAGINATED],
+    }
+  )
   const [isDetailsVisible, setIsDetailsVisible] = useState(false)
   const { onOpen } = useUserLikesModal()
+
+  const onToggleLike = async (isLiked: boolean) => {
+    try {
+      const input = {
+        pokemonId: pokemon.id,
+        userId: currentUser.id,
+      }
+      if (isLiked) {
+        await createPokemonLike({ variables: { input } })
+        toast.success('Liked')
+      } else {
+        await deletePokemonLike({ variables: { input } })
+        toast.success('Unliked')
+      }
+    } catch (error) {
+      console.error('Failed to like pokemon', error)
+    }
+  }
+
   return (
     <Box
-      w={'350px'}
+      w={'330px'}
       h={'500px'}
       position={'relative'}
       css={{ perspective: '1000px' }}
@@ -69,7 +117,8 @@ export default function PokeCard({ pokemon }: { pokemon: Pokemon }) {
         <FrontPokeCard
           data={pokemon}
           onFlip={() => setIsDetailsVisible(true)}
-          onToggleLike={() => {}}
+          onToggleLike={onToggleLike}
+          isLikeLoading={loading || isLoadingLikeRemoval}
           onToggleTop={() => {}}
         />
         <BackPokeCard
@@ -86,11 +135,13 @@ const FrontPokeCard = ({
   data: { description, image, name, types, isTop, isLiked },
   onFlip,
   onToggleLike,
+  isLikeLoading,
   onToggleTop,
 }: {
   data: Pokemon
   onToggleTop: (isTop: boolean) => void
   onToggleLike: (isLiked: boolean) => void
+  isLikeLoading: boolean
 } & FaceCardProps) => {
   const { isAuthenticated } = useAuth()
   return (
@@ -159,6 +210,7 @@ const FrontPokeCard = ({
           <Button
             size={'sm'}
             onClick={() => onToggleLike(!isLiked)}
+            isLoading={isLikeLoading}
             flex="1"
             bg={isLiked ? 'red.400' : color}
             color={'white'}

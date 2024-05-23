@@ -7,8 +7,8 @@ export const schema = gql`
     description: String!
     likes: Int!
     types: [String!]!
-    isTop: Boolean!
-    isLiked: Boolean!
+    isTop: Boolean
+    isLiked: Boolean
   }
 
   type PokemonStats {

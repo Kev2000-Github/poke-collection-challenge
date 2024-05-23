@@ -4,6 +4,8 @@ import type {
   PokemonTopRelationResolvers,
 } from 'types/graphql'
 
+import { RedwoodGraphQLError } from '@redwoodjs/graphql-server'
+
 import { db } from 'src/lib/db'
 
 import { pokemon } from '../pokemon/pokemon'
@@ -15,6 +17,12 @@ export const myPokemonTops: QueryResolvers['myPokemonTops'] = () => {
 export const createPokemonTop: MutationResolvers['createPokemonTop'] = async ({
   input,
 }) => {
+  const topPokemonCount = await db.pokemonTop.count({
+    where: { userId: context.currentUser.id },
+  })
+  if (topPokemonCount >= 10) {
+    throw new RedwoodGraphQLError('You can only have 10 top Pokemon')
+  }
   return db.pokemonTop.create({
     data: input,
   })

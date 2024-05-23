@@ -22,6 +22,6 @@ export const schema = gql`
 
   type Query {
     getPokemons(pagination: PaginationInput!): [Pokemon!]! @skipAuth
-    pokemon(id: Int!): Pokemon @skipAuth
+    pokemon(id: Int!): Pokemon! @skipAuth
   }
 `

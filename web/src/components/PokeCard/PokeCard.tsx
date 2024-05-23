@@ -139,6 +139,7 @@ export default function PokeCard({ pokemon, refetchQueries }: Props) {
         toast.success('removed pokemon as favorite')
       }
     } catch (error) {
+      toast.error(error.message)
       console.error('something failed', error)
     }
   }

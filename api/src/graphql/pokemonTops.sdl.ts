@@ -5,6 +5,7 @@ export const schema = gql`
     pokemonId: Int!
     createdAt: DateTime!
     User: User!
+    Pokemon: Pokemon!
   }
 
   type Query {

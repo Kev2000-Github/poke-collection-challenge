@@ -6,6 +6,8 @@ import type {
 
 import { db } from 'src/lib/db'
 
+import { pokemon } from '../pokemon/pokemon'
+
 export const myPokemonTops: QueryResolvers['myPokemonTops'] = () => {
   return db.pokemonTop.findMany({ where: { userId: context.currentUser.id } })
 }
@@ -29,5 +31,8 @@ export const deletePokemonTop: MutationResolvers['deletePokemonTop'] = ({
 export const PokemonTop: PokemonTopRelationResolvers = {
   User: (_obj, { root }) => {
     return db.pokemonTop.findUnique({ where: { id: root?.id } }).User()
+  },
+  Pokemon: (_obj, { root }) => {
+    return pokemon({ id: root?.pokemonId })
   },
 }

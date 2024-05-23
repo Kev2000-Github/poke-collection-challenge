@@ -1,5 +1,8 @@
 import { Box, SimpleGrid, Skeleton } from '@chakra-ui/react'
-import type { PokemonsQuery, PokemonsQueryVariables } from 'types/graphql'
+import type {
+  FindTopPokemonsQuery,
+  FindTopPokemonsQueryVariables,
+} from 'types/graphql'
 
 import type {
   CellSuccessProps,
@@ -10,23 +13,25 @@ import type {
 import PokeCard from '../PokeCard/PokeCard'
 
 export const QUERY: TypedDocumentNode<
-  PokemonsQuery,
-  PokemonsQueryVariables
+  FindTopPokemonsQuery,
+  FindTopPokemonsQueryVariables
 > = gql`
-  query PokemonsQuery($pagination: PaginationInput!) {
-    getPokemons(pagination: $pagination) {
-      id
-      name
-      stats {
-        stat
-        val
+  query FindTopPokemonsQuery {
+    topPokemons: myPokemonTops {
+      Pokemon {
+        id
+        name
+        stats {
+          stat
+          val
+        }
+        image
+        description
+        likes
+        types
+        isTop
+        isLiked
       }
-      image
-      description
-      likes
-      types
-      isTop
-      isLiked
     }
   }
 `
@@ -45,19 +50,21 @@ export const Loading = () => (
 
 export const Empty = () => <div>Empty</div>
 
-export const Failure = ({ error }: CellFailureProps) => (
+export const Failure = ({
+  error,
+}: CellFailureProps<FindTopPokemonsQueryVariables>) => (
   <div style={{ color: 'red' }}>Error: {error?.message}</div>
 )
 
 export const Success = ({
-  getPokemons: pokemons,
-}: CellSuccessProps<PokemonsQuery>) => {
+  topPokemons,
+}: CellSuccessProps<FindTopPokemonsQuery, FindTopPokemonsQueryVariables>) => {
   return (
     <SimpleGrid columns={{ base: 2, lg: 3, xl: 4 }} spacing={4}>
-      {pokemons.map((item) => {
+      {topPokemons.map((item) => {
         return (
-          <Box key={item.id}>
-            <PokeCard refetchQueries={[QUERY]} pokemon={item} />
+          <Box key={item.Pokemon.id}>
+            <PokeCard refetchQueries={[QUERY]} pokemon={item.Pokemon} />
           </Box>
         )
       })}

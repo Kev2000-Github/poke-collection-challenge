@@ -82,3 +82,47 @@ export const getPokemons: QueryResolvers['getPokemons'] = async ({
 
   return formattedPokemons
 }
+
+export const pokemon: QueryResolvers['pokemon'] = async ({ id }) => {
+  const Pokedex = (await import('pokedex-promise-v2')).default
+  const P = new Pokedex()
+  const species = await P.getPokemonSpeciesByName(id)
+  const pokemon = await P.getPokemonByName(id)
+  const count = await db.pokemonLike.count({
+    where: { pokemonId: pokemon.id },
+  })
+  const isLiked = await db.pokemonLike.findUnique({
+    where: {
+      userId_pokemonId: {
+        userId: context.currentUser.id,
+        pokemonId: pokemon.id,
+      },
+    },
+  })
+  const isTop = await db.pokemonTop.findUnique({
+    where: {
+      userId_pokemonId: {
+        userId: context.currentUser.id,
+        pokemonId: pokemon.id,
+      },
+    },
+  })
+  const description = species.flavor_text_entries.findLast(
+    (entry) => entry.language.name === 'en'
+  ).flavor_text
+
+  return {
+    id: pokemon.id,
+    name: pokemon.name,
+    image: pokemon.sprites.other['official-artwork'].front_default,
+    types: pokemon.types.map((type) => type.type.name),
+    stats: pokemon.stats.map((stat) => ({
+      stat: stat.stat.name,
+      val: stat.base_stat,
+    })),
+    description,
+    isTop: isTop ? true : false,
+    likes: count,
+    isLiked: isLiked ? true : false,
+  }
+}

@@ -44,7 +44,7 @@ export default function NavbarApp() {
 
   const Links = [
     { name: 'Dashboard', path: routes.home() },
-    { name: 'my Top Pokemons', path: '#' },
+    { name: 'my Top Pokemons', path: routes.topPokemon() },
   ]
 
   return (

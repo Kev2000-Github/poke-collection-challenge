@@ -14,11 +14,10 @@ import {
   IconButton,
 } from '@chakra-ui/react'
 
-import { useMutation } from '@redwoodjs/web'
+import { TypedDocumentNode, useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/dist/toast'
 
 import { useAuth } from 'src/auth'
-import { QUERY as GET_POKEMONS_PAGINATED } from 'src/components/PokemonsCell'
 import useUserLikesModal from 'src/hooks/use-user-likes-modal'
 interface Pokemon {
   id: number
@@ -27,9 +26,9 @@ interface Pokemon {
   description: string
   types: string[]
   stats: PokemonStats
-  isTop: boolean
+  isTop?: boolean
   likes: number
-  isLiked: boolean
+  isLiked?: boolean
 }
 
 type PokemonStats = { stat: string; val: number }[]
@@ -78,26 +77,31 @@ const REMOVE_POKEMON_TOP = gql`
 
 const color = 'green.300'
 
-export default function PokeCard({ pokemon }: { pokemon: Pokemon }) {
+interface Props {
+  pokemon: Pokemon
+  refetchQueries?: TypedDocumentNode[]
+}
+
+export default function PokeCard({ pokemon, refetchQueries }: Props) {
   const { currentUser } = useAuth()
   const [createPokemonLike, { loading }] = useMutation(CREATE_POKEMON_LIKE, {
-    refetchQueries: [GET_POKEMONS_PAGINATED],
+    refetchQueries: [...refetchQueries],
   })
   const [deletePokemonLike, { loading: isLoadingLikeRemoval }] = useMutation(
     DELETE_POKEMON_LIKE,
     {
-      refetchQueries: [GET_POKEMONS_PAGINATED],
+      refetchQueries: [...refetchQueries],
     }
   )
   const [createPokemonTop, { loading: isLoadingAddPokemonTop }] = useMutation(
     ADD_POKEMON_TOP,
     {
-      refetchQueries: [GET_POKEMONS_PAGINATED],
+      refetchQueries: [...refetchQueries],
     }
   )
   const [removePokemonTop, { loading: isLoadingRemovePokemonTop }] =
     useMutation(REMOVE_POKEMON_TOP, {
-      refetchQueries: [GET_POKEMONS_PAGINATED],
+      refetchQueries: [...refetchQueries],
     })
 
   const [isDetailsVisible, setIsDetailsVisible] = useState(false)

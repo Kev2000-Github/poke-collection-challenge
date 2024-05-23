@@ -1,5 +1,26 @@
 import type { Prisma } from '@prisma/client'
 import { db } from 'api/src/lib/db'
+import CryptoJS from 'crypto-js'
+
+function hashPassword(text: string, salt?: string) {
+  const useSalt = salt || CryptoJS.lib.WordArray.random(128 / 8).toString()
+
+  return [
+    CryptoJS.PBKDF2(text, useSalt, { keySize: 256 / 32 }).toString(),
+    useSalt,
+  ]
+}
+
+const getUserData: (
+  data: Omit<Prisma.UserCreateArgs['data'], 'salt' | 'hashedPassword'>
+) => Prisma.UserCreateArgs['data'] = (data) => {
+  const [hashedPassword, salt] = hashPassword('12345')
+  return {
+    ...data,
+    salt,
+    hashedPassword,
+  }
+}
 
 export default async () => {
   try {
@@ -9,28 +30,78 @@ export default async () => {
     //
     // Update "const data = []" to match your data model and seeding needs
     //
-    const data: Prisma.UserExampleCreateArgs['data'][] = [
-      // To try this example data with the UserExample model in schema.prisma,
-      // uncomment the lines below and run 'yarn rw prisma migrate dev'
-      //
-      // { name: 'alice', email: 'alice@example.com' },
-      // { name: 'mark', email: 'mark@example.com' },
-      // { name: 'jackie', email: 'jackie@example.com' },
-      // { name: 'bob', email: 'bob@example.com' },
+    const data: Prisma.UserCreateArgs['data'][] = [
+      getUserData({
+        username: 'albertoMendez',
+        fullName: 'Alberto Mendoza',
+        pokemonLike: {
+          create: [
+            { pokemonId: 1 },
+            { pokemonId: 2 },
+            { pokemonId: 3 },
+            { pokemonId: 4 },
+            { pokemonId: 5 },
+          ],
+        },
+        avatar:
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&ixid=eyJhcHBfaWQiOjE3Nzg0fQ',
+      }),
+      getUserData({
+        username: 'carlitos',
+        fullName: 'Carlos Rodriguez',
+        pokemonLike: {
+          create: [
+            { pokemonId: 1 },
+            { pokemonId: 2 },
+            { pokemonId: 3 },
+            { pokemonId: 4 },
+            { pokemonId: 5 },
+          ],
+        },
+        avatar:
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&ixid=eyJhcHBfaWQiOjE3Nzg0fQ',
+      }),
+      getUserData({
+        username: 'juanitos',
+        fullName: 'Juan Manzano',
+        pokemonLike: {
+          create: [
+            { pokemonId: 1 },
+            { pokemonId: 2 },
+            { pokemonId: 3 },
+            { pokemonId: 4 },
+            { pokemonId: 5 },
+          ],
+        },
+        avatar:
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&ixid=eyJhcHBfaWQiOjE3Nzg0fQ',
+      }),
+      getUserData({
+        username: 'drake',
+        fullName: 'drake bell',
+        pokemonLike: {
+          create: [
+            { pokemonId: 1 },
+            { pokemonId: 2 },
+            { pokemonId: 3 },
+            { pokemonId: 4 },
+            { pokemonId: 5 },
+          ],
+        },
+        avatar:
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&ixid=eyJhcHBfaWQiOjE3Nzg0fQ',
+      }),
     ]
     console.log(
       "\nUsing the default './scripts/seed.ts' template\nEdit the file to add seed data\n"
     )
 
-    if ((await db.userExample.count()) === 0) {
+    if ((await db.user.count()) === 0) {
       // Note: if using PostgreSQL, using `createMany` to insert multiple records is much faster
       // @see: https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#createmany
       await Promise.all(
-        //
-        // Change to match your data model and seeding needs
-        //
-        data.map(async (data: Prisma.UserExampleCreateArgs['data']) => {
-          const record = await db.userExample.create({ data })
+        data.map(async (data: Prisma.UserCreateArgs['data']) => {
+          const record = await db.user.create({ data })
           console.log(record)
         })
       )

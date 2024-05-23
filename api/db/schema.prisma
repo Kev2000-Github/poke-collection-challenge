@@ -5,7 +5,7 @@
 // https://www.prisma.io/docs/orm/prisma-migrate
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -16,9 +16,32 @@ generator client {
 
 // Define your own datamodels here and run `yarn redwood prisma migrate dev`
 // to create migrations for them and apply to your dev DB.
-// TODO: Please remove the following example:
-model UserExample {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username     String   @unique
+  fullName     String
+  avatar       String?
+  hashedPassword String
+  salt String
+  resetToken String?
+  resetTokenExpiresAt DateTime?
+  pokemonLike PokemonLike[]
+  pokemonTop PokemonTop[]
+}
+
+model PokemonLike {
+  id       Int      @id @default(autoincrement())
+  userId    Int
+  pokemonId Int
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+model PokemonTop {
+  id       Int      @id @default(autoincrement())
+  userId    Int
+  pokemonId Int
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id])
 }

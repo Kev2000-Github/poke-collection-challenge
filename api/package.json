@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@redwoodjs/api": "7.6.1",
-    "@redwoodjs/graphql-server": "7.6.1"
+    "@redwoodjs/auth-dbauth-api": "7.6.1",
+    "@redwoodjs/graphql-server": "7.6.1",
+    "pokedex-promise-v2": "^4.2.0"
   }
 }

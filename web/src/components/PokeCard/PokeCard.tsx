@@ -75,7 +75,29 @@ const REMOVE_POKEMON_TOP = gql`
   }
 `
 
-const color = 'green.300'
+const getColor = (types: string[]) => {
+  for (const type of types) {
+    switch (type) {
+      case 'fire':
+        return 'red.300'
+      case 'water':
+        return 'blue.300'
+      case 'poison':
+        return 'purple.300'
+      case 'electric':
+        return 'yellow.300'
+      case 'ground':
+        return 'orange.300'
+      case 'grass':
+        return 'green.300'
+      case 'normal':
+        return 'gray.300'
+      case 'fairy':
+        return 'pink.300'
+    }
+  }
+  return 'green.300'
+}
 
 interface Props {
   pokemon: Pokemon
@@ -266,7 +288,7 @@ const FrontPokeCard = ({
             onClick={() => onToggleLike(!isLiked)}
             isLoading={isLikeLoading}
             flex="1"
-            bg={isLiked ? 'red.400' : color}
+            bg={isLiked ? 'red.400' : getColor(types)}
             color={'white'}
             rounded={'md'}
             _hover={
@@ -332,7 +354,7 @@ const BackPokeCard = ({
         <Heading fontSize="2xl" as="h2" fontWeight={600}>
           Basic Stats
         </Heading>
-        <Divider borderColor={color} />
+        <Divider borderColor={getColor(types)} />
         <Grid pt="4" templateColumns="repeat(3, 1fr)" gap={4}>
           {stats.map((stat, idx) => {
             return (
@@ -362,7 +384,7 @@ const BackPokeCard = ({
             <Heading fontSize="xl" as="h2" fontWeight={600}>
               Likes
             </Heading>
-            <Divider borderColor={color} />
+            <Divider borderColor={getColor(types)} />
             <Text opacity={0.6} fontSize="medium" fontWeight={400}>
               {likes}
             </Text>
@@ -371,7 +393,7 @@ const BackPokeCard = ({
             <Heading fontSize="xl" as="h2" fontWeight={600}>
               Favorite
             </Heading>
-            <Divider borderColor={color} />
+            <Divider borderColor={getColor(types)} />
             {renderIsTop()}
           </Stack>
         </Flex>
@@ -393,7 +415,7 @@ const BackPokeCard = ({
           <Button
             size={'sm'}
             flex="1"
-            bg={color}
+            bg={getColor(types)}
             color="white"
             rounded={'md'}
             _hover={{
@@ -418,7 +440,7 @@ const CardLayout: React.FC<CardLayoutProps> = ({
   return (
     <Flex
       p={1}
-      bg={color}
+      bg={getColor(types)}
       position="absolute"
       w="100%"
       h="100%"

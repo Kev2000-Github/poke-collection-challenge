@@ -13,14 +13,15 @@ import {
   MenuList,
   MenuItem,
   useDisclosure,
-  useColorModeValue,
   Link,
   Stack,
+  Image,
 } from '@chakra-ui/react'
 
 import { routes, Link as RWLink } from '@redwoodjs/router'
 
 import { useAuth } from 'src/auth'
+import { Logo } from 'src/icons/logo'
 
 const NavLink = ({ children, path }: { children: ReactNode; path: string }) => (
   <Link
@@ -31,7 +32,7 @@ const NavLink = ({ children, path }: { children: ReactNode; path: string }) => (
     rounded={'md'}
     _hover={{
       textDecoration: 'none',
-      bg: useColorModeValue('gray.200', 'gray.700'),
+      bg: 'gray.200',
     }}
   >
     {children}
@@ -44,7 +45,7 @@ export default function NavbarApp() {
 
   const Links = [
     { name: 'Dashboard', path: routes.home() },
-    { name: 'my Top Pokemons', path: routes.topPokemon() },
+    { name: 'Top Pokemons', path: routes.topPokemon() },
   ]
 
   return (
@@ -69,7 +70,9 @@ export default function NavbarApp() {
           onClick={isOpen ? onClose : onOpen}
         />
         <HStack spacing={8} alignItems={'center'}>
-          <Box>Logo</Box>
+          <Box>
+            <Logo />
+          </Box>
           {isAuthenticated && (
             <HStack
               as={'nav'}
